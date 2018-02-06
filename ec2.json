@@ -1,0 +1,364 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "AWS CloudFormation for EC2 instances",
+  "Metadata": {
+      "AWS::CloudFormation::Interface": {
+          "ParameterGroups": [
+
+              {
+                  "Label": {
+                      "default": " EC Instance Configuration "
+                  },
+                  "Parameters": [
+                             "VPC",
+                             "SubnetEC2",
+                             "EC2InstanceImage",
+                             "Instancetype",
+                             "KeyName",
+                             "InstanceSecurityGroup",
+                             "InstanceTenancy",
+                             "PrivateIPtoEC2",
+                             "TagName" ,
+                             "TagApplicationRole",
+                             "TagCluster",
+                             "TagEnvironment",
+                             "TagVersion",
+                             "TagOperatingSystem",
+                             "TagOwner",
+                             "TagBusinessUnit",
+                             "TagCompliance",
+                             "TagBackup"
+                  ]
+              }
+          ]
+      }
+
+  },
+
+
+
+  "Parameters" : {
+
+        "VPC": {
+                "Type": "AWS::EC2::VPC::Id",
+                "Description": "VPCIDtolaunchinto"
+            },
+
+        "SubnetEC2": {
+                "Description": "Public Subnet",
+                "Type": "AWS::EC2::Subnet::Id"
+              },
+
+
+        "EC2InstanceImage": {
+           "Description" : "ImageID/AMI",
+           "Type": "String"
+
+         },
+
+        "Instancetype" : {
+                "Description" : "Instance Type for EC2",
+                "Type" :"String",
+                "AllowedValues" : [
+                               "c5.xlarge",
+                               "c5.large",
+                               "c5.9xlarge",
+                               "c5.4xlarge",
+                               "c5.2xlarge",
+                               "c5.18xlarge",
+                               "c4.xlarge",
+                               "c4.large",
+                               "c4.8xlarge",
+                               "c4.4xlarge",
+                               "c4.2xlarge",
+                               "c3.xlarge",
+                               "c3.large",
+                               "c3.8xlarge",
+                               "c3.4xlarge",
+                               "c3.2xlarge",
+                               "f1.2xlarge",
+                               "f1.16xlarge",
+                               "p3.8xlarge",
+                               "p3.2xlarge",
+                               "p3.16xlarge",
+                               "p2.xlarge",
+                               "p2.8xlarge",
+                               "p2.16xlarge",
+                               "g3.8xlarge",
+                               "g3.4xlarge",
+                               "g3.16xlarge",
+                               "g2.8xlarge",
+                               "g2.2xlarge",
+                               "t2.xlarge",
+                               "t2.small",
+                               "t2.nano",
+                               "t2.micro",
+                               "t2.medium",
+                               "t2.large",
+                               "t2.2xlarge",
+                               "m5.xlarge",
+                               "m5.large",
+                               "m5.4xlarge",
+                               "m5.2xlarge",
+                               "m5.24xlarge",
+                               "m5.12xlarge",
+                               "m4.xlarge",
+                               "m4.large",
+                               "m4.4xlarge",
+                               "m4.2xlarge",
+                               "m4.16xlarge",
+                               "m4.10xlarge",
+                               "m3.xlarge",
+                               "m3.medium",
+                               "m3.large",
+                               "m3.2xlarge",
+                               "x1e.xlarge",
+                               "x1e.8xlarge",
+                               "x1e.4xlarge",
+                               "x1e.32xlarge",
+                               "x1e.2xlarge",
+                               "x1e.16xlarge",
+                               "x1.32xlarge",
+                               "x1.16xlarge",
+                               "r4.xlarge",
+                               "r4.large",
+                               "r4.8xlarge",
+                               "r4.4xlarge",
+                               "r4.2xlarge",
+                               "r4.16xlarge",
+                               "r3.xlarge",
+                               "r3.large",
+                               "r3.8xlarge",
+                               "r3.4xlarge",
+                               "r3.2xlarge",
+                               "i3.xlarge",
+                               "i3.large",
+                               "i3.8xlarge",
+                               "i3.4xlarge",
+                               "i3.2xlarge",
+                               "i3.16xlarge",
+                               "i2.xlarge",
+                               "i2.8xlarge",
+                               "i2.4xlarge",
+                               "i2.2xlarge",
+                               "h1.8xlarge",
+                               "h1.4xlarge",
+                               "h1.2xlarge",
+                               "h1.16xlarge",
+                               "d2.xlarge",
+                               "d2.8xlarge",
+                               "d2.4xlarge",
+                               "d2.2xlarge"
+         ]
+         },
+
+         "KeyName": {
+           "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+           "Type": "String",
+           "MinLength": "1",
+           "MaxLength": "255",
+           "AllowedPattern" : "[\\x20-\\x7E]*",
+           "ConstraintDescription" : "can contain only ASCII characters."
+         },
+
+        "InstanceSecurityGroup": {
+           "Description" : "Security group for EC2 Instance",
+           "Type" : "String"
+         },
+
+
+        "InstanceTenancy" :{
+            "Description" : "Tenancy EC2",
+            "Type" : "String",
+            "AllowedValues":["default","dedicated","host"]
+         } ,
+
+
+         "PrivateIPtoEC2" : {
+            "Description" : "Private IPaddress for Ec2 Instance",
+            "Type": "String"
+
+         },
+
+         "TagName" :{
+
+           "Type" : "String"
+         },
+         "TagApplicationRole" :{
+
+           "Type" : "String"
+         },
+
+         "TagCluster" :{
+
+           "Type" : "String"
+         },
+
+         "TagEnvironment" :{
+
+           "Type" : "String"
+         },
+
+         "TagVersion" :{
+
+           "Type" : "String"
+         },
+
+         "TagOperatingSystem" :{
+
+           "Type" : "String"
+         },
+
+         "TagOwner" :{
+
+           "Type" : "String"
+         },
+
+         "TagBusinessUnit" :{
+
+           "Type" : "String"
+         },
+
+         "TagCompliance" :{
+
+           "Type" : "String"
+         },
+
+         "TagBackup" :{
+
+           "Type" : "String"
+         },
+
+        "TagNICName" :{
+
+           "Type" : "String"
+        }
+
+
+
+   },
+
+
+
+
+  "Resources" : {
+
+    "NIC1" : {
+
+     "Type" : "AWS::EC2::NetworkInterface",
+     "Properties" : {
+       "SubnetId" : {"Ref" :"SubnetEC2"},
+       "PrivateIpAddress": {"Ref":"PrivateIPtoEC2"},
+       "GroupSet" : [ { "Ref" : "InstanceSecurityGroup" } ],
+       "Tags": [{
+               "Key": "Name",
+               "Value": {"Ref": "TagNICName"}
+             }
+
+                   {
+                           "Key": "ApplicationRole",
+                           "Value": {"Ref": "TagApplicationRole"}
+                         },
+                         {
+                                 "Key": "Cluster",
+                                 "Value": {"Ref": "TagCluster"}
+                               },
+                               {
+                                       "Key": "Environment",
+                                       "Value": {"Ref": "TagEnvironment"}
+                                     },
+                                     {
+                                             "Key": "Version",
+                                             "Value": {"Ref": "TagVersion"}
+                                           },
+                                          {
+                                                   "Key": "OperatingSystem",
+                                                   "Value": {"Ref": "TagOperatingSystem"}
+                                                 },
+                                                 {
+                                                         "Key": "Owner",
+                                                         "Value": {"Ref": "TagOwner"}
+                                                       },
+                                                       {
+                                                               "Key": "BusinessUnit",
+                                                               "Value": {"Ref": "TagBusinessUnit"}
+                                                             },
+                                                             {
+                                                                     "Key": "Compliance",
+                                                                     "Value": {"Ref": "TagCompliance"}
+                                                                   },{
+                                                                           "Key": "Backup",
+                                                                           "Value": {"Ref": "TagBackup"}
+                                                                         }
+
+                 ]
+
+     }
+   },
+    "EInstance" : {
+      "Type" : "AWS::EC2::Instance",
+      "DeletionPolicy" : "Retain",
+      "Properties" : {
+        "KeyName" : { "Ref" : "KeyName" },
+
+        "ImageId" : { "Ref" : "EC2InstanceImage"},
+
+        "InstanceType" : {"Ref" : "Instancetype"},
+
+        "Tenancy" :{"Ref" : "InstanceTenancy"},
+
+        "DisableApiTermination" :"true",
+
+        "NetworkInterfaces" : [{ "NetworkInterfaceId" : { "Ref" : "NIC1" }, "DeviceIndex" : "0" }
+                                      ],
+
+
+                                      "Tags": [{
+                                    					"Key": "Name",
+                                    					"Value": {"Ref": "TagName"}
+                                    				},
+                                            {
+                                          					"Key": "ApplicationRole",
+                                          					"Value": {"Ref": "TagApplicationRole"}
+                                          				},
+                                                  {
+                                                					"Key": "Cluster",
+                                                					"Value": {"Ref": "TagCluster"}
+                                                				},
+                                                        {
+                                                      					"Key": "Environment",
+                                                      					"Value": {"Ref": "TagEnvironment"}
+                                                      				},
+                                                              {
+                                                            					"Key": "Version",
+                                                            					"Value": {"Ref": "TagVersion"}
+                                                            				},{
+                                                                  					"Key": "OperatingSystem",
+                                                                  					"Value": {"Ref": "TagOperatingSystem"}
+                                                                  				},
+                                                                          {
+                                                                        					"Key": "Owner",
+                                                                        					"Value": {"Ref": "TagOwner"}
+                                                                        				},
+                                                                                {
+                                                                              					"Key": "BusinessUnit",
+                                                                              					"Value": {"Ref": "TagBusinessUnit"}
+                                                                              				},
+                                                                                      {
+                                                                                    					"Key": "Compliance",
+                                                                                    					"Value": {"Ref": "TagCompliance"}
+                                                                                    				},{
+                                                                                          					"Key": "Backup",
+                                                                                          					"Value": {"Ref": "TagBackup"}
+                                                                                          				}
+
+                                          ]
+
+      }
+    }
+
+
+
+}
+}
