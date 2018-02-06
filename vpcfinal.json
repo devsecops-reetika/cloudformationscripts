@@ -1,0 +1,752 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Provides the Oregon-Region VPC with subnets and Interne",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+                    "Label": {
+                        "default": "Region Config"
+                    },
+                    "Parameters": [
+                        "pRegionAZ1Name",
+                        "pRegionAZ2Name",
+                        "pRegionAZ3Name"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": " VPC Configuration"
+                    },
+                    "Parameters": [
+                        "ProductionVPCName",
+                        "ProductionCIDR",
+                        "PSSubnetA1",
+                        "DMZSubnetA1",
+                        "FESubnetA1",
+                        "MTSubnetA1",
+                        "DBSubnetA1",
+                        "PSSubnetB1",
+                        "DMZSubnetB1",
+                        "FESubnetB1",
+                        "MTSubnetB1",
+                        "DBSubnetB1",
+                        "PSSubnetC1",
+                        "DMZSubnetC1",
+                        "FESubnetC1",
+                        "MTSubnetC1",
+                        "DBSubnetC1",
+                        "VPCTenancy"
+                    ]
+                }
+            ]
+        },
+        "ParameterLabels": {
+            "ProductionVPCName": {
+                "default": "Name of Production VPC"
+            },
+            "ProductionCIDR": {
+                "default": "Production VPC CIDR block"
+            },
+            "PSSubnetA1": {
+                "default": "CIDR block of PS A1 subnet (internet facing)"
+            },
+            "PSSubnetB1": {
+                "default": "CIDR block of PS B1 subnet (internet facing)"
+            },
+            "PSSubnetC1": {
+                "default": "CIDR block of PS C1 subnet (internet facing)"
+            },
+            "DMZSubnetA1": {
+                "default": "CIDR block of  DMZ A1 subnet (private)"
+            },
+            "DMZSubnetB1": {
+                "default": "CIDR block of  DMZ B1 subnet (private)"
+            },
+            "DMZSubnetC1": {
+                "default": "CIDR block of  DMZ C1 subnet (private)"
+            },
+            "FESubnetA1": {
+                "default": "CIDR block of  FE A1 subnet (private)"
+            },
+            "FESubnetB1": {
+                "default": "CIDR block of  FE B1 subnet (private)"
+            },
+            "FESubnetC1": {
+                "default": "CIDR block of  FE C1 subnet (private)"
+            },
+            "MTSubnetA1": {
+                "default": "CIDR block of  MT A1 subnet (private)"
+            },
+            "MTSubnetB1": {
+                "default": "CIDR block of  MT B1 subnet (private)"
+            },
+            "MTSubnetC1": {
+                "default": "CIDR block of  MT C1 subnet (private)"
+            },
+            "DBSubnetA1": {
+                "default": "CIDR block of  DB A1 subnet (private)"
+            },
+            "DBSubnetB1": {
+                "default": "CIDR block of  DB B1 subnet (private)"
+            },
+            "DBSubnetC1": {
+                "default": "CIDR block of  DB C1 subnet (private)"
+            },
+            "VPCTenancy": {
+                "default": "Instance tenancy"
+            }
+        }
+    },
+    "Parameters": {
+        "RegionAZ1Name": {
+            "Description": "Availability Zone 1 Name in Region",
+            "Type": "AWS::EC2::AvailabilityZone::Name"
+        },
+        "RegionAZ2Name": {
+            "Description": "Availability Zone 2 Name in Region",
+            "Type": "AWS::EC2::AvailabilityZone::Name"
+        },
+        "RegionAZ3Name": {
+            "Description": "Availability Zone 3 Name in Region",
+            "Type": "AWS::EC2::AvailabilityZone::Name"
+        },
+        "ProductionVPCName": {
+            "Description": "Production VPC Name",
+            "Type": "String",
+            "Default": "Ore-Production"
+        },
+        "ProductionCIDR": {
+            "Description": "CIDR block for Production VPC",
+            "Type": "String",
+            "Default": "10.219.0.0/19"
+        },
+        "PSSubnetA1": {
+            "Description": "CIDR block for PS AZ-A1 subnet",
+            "Type": "String",
+            "Default": "10.219.16.0/24"
+        },
+        "PSSubnetB1": {
+            "Description": "CIDR block for PS AZ-B1 subnet",
+            "Type": "String",
+            "Default": "10.219.17.0/24"
+        },
+        "PSSubnetC1": {
+            "Description": "CIDR block for PS AZ-C1 subnet",
+            "Type": "String",
+            "Default": "10.219.18.0/24"
+        },
+        "DMZSubnetA1": {
+            "Description": "CIDR block for DMZ AZ-A1 subnet",
+            "Type": "String",
+            "Default": "10.219.20.0/24"
+        },
+        "DMZSubnetB1": {
+            "Description": "CIDR block for DMZ AZ-B1 subnet",
+            "Type": "String",
+            "Default": "10.219.21.0/24"
+        },
+        "DMZSubnetC1": {
+            "Description": "CIDR block for DMZ AZ-C1 subnet",
+            "Type": "String",
+            "Default": "10.219.22.0/24"
+        },
+        "FESubnetA1": {
+            "Description": "CIDR block for FE AZ-A1 subnet",
+            "Type": "String",
+            "Default": "10.219.0.0/22"
+        },
+        "FESubnetB1": {
+            "Description": "CIDR block for FE AZ-B1 subnet",
+            "Type": "String",
+            "Default": "10.219.4.0/22"
+        },
+        "FESubnetC1": {
+            "Description": "CIDR block for FE AZ-C1 subnet",
+            "Type": "String",
+            "Default": "10.219.8.0/22"
+        },
+        "MTSubnetA1": {
+            "Description": "CIDR block for MT AZ-A1 subnet",
+            "Type": "String",
+            "Default": "10.219.24.0/24"
+        },
+        "MTSubnetB1": {
+            "Description": "CIDR block for MT AZ-B1 subnet",
+            "Type": "String",
+            "Default": "10.219.25.0/24"
+        },
+        "MTSubnetC1": {
+            "Description": "CIDR block for MT AZ-C1 subnet",
+            "Type": "String",
+            "Default": "10.219.26.0/24"
+        },
+        "DBSubnetA1": {
+            "Description": "CIDR block for DB AZ-A1 subnet",
+            "Type": "String",
+            "Default": "10.219.28.0/24"
+        },
+        "DBSubnetB1": {
+            "Description": "CIDR block for DB AZ-B1 subnet",
+            "Type": "String",
+            "Default": "10.219.29.0/24"
+        },
+        "DBSubnetC1": {
+            "Description": "CIDR block for DB AZ-C1 subnet",
+            "Type": "String",
+            "Default": "10.219.30.0/24"
+        },
+        "VPCTenancy": {
+            "Description": "Instance tenancy behavior for this VPC",
+            "Type": "String",
+            "Default": "default",
+            "AllowedValues": [
+                "default",
+                "dedicated"
+            ]
+        },
+        "Environment": {
+            "Description": "Environment (nonproduction or production)",
+            "Type": "String",
+            "Default": "nonproduction"
+        }
+    },
+    "Resources": {
+        "VPCProduction": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "ProductionCIDR"
+                },
+                "InstanceTenancy": {
+                    "Ref": "VPCTenancy"
+                },
+                "EnableDnsSupport": true,
+                "EnableDnsHostnames": true,
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": {
+                            "Ref": "ProductionVPCName"
+                        }
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rPSSubnetA1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "PSSubnetA1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ1Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rPS Subnet A1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rPSSubnetB1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "PSSubnetB1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ2Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rPS Subnet B1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rPSSubnetC1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "PSSubnetC1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ3Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rPS Subnet C1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rDMZSubnetA1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "DMZSubnetA1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ1Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rDMZ Subnet A1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rDMZSubnetB1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "DMZSubnetB1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ2Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rDMZ Subnet B1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rDMZSubnetC1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "DMZSubnetC1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ3Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rDMZ Subnet C1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rFESubnetA1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "FESubnetA1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ1Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rFE Subnet A1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rFESubnetB1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "FESubnetB1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ2Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rFE Subnet B1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rFESubnetC1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "FESubnetC1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ3Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rFE Subnet C1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+
+        },
+        "rMTSubnetA1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "MTSubnetA1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ1Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rMT Subnet A1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rMTSubnetB1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "MTSubnetB1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ2Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rMT Subnet B1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rMTSubnetC1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "MTSubnetC1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ3Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rMT Subnet C1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rDBSubnetA1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "DBSubnetA1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ1Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rDB Subnet A1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rDBSubnetB1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "DBSubnetB1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ2Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rDB Subnet B1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+        },
+        "rDBSubnetC1": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "DBSubnetC1"
+                },
+                "AvailabilityZone": {
+                    "Ref": "RegionAZ3Name"
+                },
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "rDB Subnet C1"
+                    },
+                    {
+                        "Key": "Environment",
+                        "Value": {
+                            "Ref": "Environment"
+                        }
+                    }
+                ]
+            }
+
+        },
+        "rInternetGateway": {
+            "Type": "AWS::EC2::InternetGateway",
+            "DependsOn": [
+                "VPCProduction"
+            ],
+            "Properties": {
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "IG"
+                    }
+                ]
+            }
+
+        },
+        "rIGWProd": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "DependsOn": [
+                "VPCProduction",
+                "rInternetGateway"
+            ],
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "InternetGatewayId": {
+                    "Ref": "rInternetGateway"
+                }
+            }
+
+
+        },
+        "rRouteTablemain": {
+            "Type": "AWS::EC2::RouteTable",
+            "DependsOn": [
+                "VPCProduction",
+                "rIGWProd"
+            ],
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPCProduction"
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "RTP"
+                    }
+                ]
+            }
+
+        },
+        "rRoutePublic": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": [
+                "rRouteTablemain",
+                "rIGWProd"
+            ],
+            "Properties": {
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "RouteTableId": {
+                    "Ref": "rRouteTablemain"
+                },
+                "GatewayId": {
+                    "Ref": "rInternetGateway"
+                }
+            }
+
+        },
+        "subnetRouteTableAssociationPublic1": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "DependsOn": [
+                "rRouteTablemain",
+                "rPSSubnetA1"
+            ],
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "rRouteTablemain"
+                },
+                "SubnetId": {
+                    "Ref": "rPSSubnetA1"
+                }
+            }
+
+        },
+
+        "subnetRouteTableAssociationPublic2": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "DependsOn": [
+                "rRouteTablemain",
+                "rPSSubnetB1"
+            ],
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "rRouteTablemain"
+                },
+                "SubnetId": {
+                    "Ref": "rPSSubnetB1"
+                }
+            }
+
+        },
+        "subnetRouteTableAssociationPublic3": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "DependsOn": [
+                "rRouteTablemain",
+                "rPSSubnetC1"
+            ],
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "rRouteTablemain"
+                },
+                "SubnetId": {
+                    "Ref": "rPSSubnetC1"
+                }
+            }
+
+        }
+    }
+}
