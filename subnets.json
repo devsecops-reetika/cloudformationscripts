@@ -1,0 +1,518 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Deploys Subnets, Flowlog for DB and MT subnets",
+     "Parameters" :{
+
+       "Vpcid": {
+
+         "Type" :"String"
+       },
+
+       "AZ1":{
+         "Type":"String"
+       },
+
+       "AZ2":{
+         "Type" :"String"
+       },
+
+       "TagOwner" :{
+         "Type": "String"
+       }
+     },
+
+
+    "Resources": {
+
+
+        "OreCSRSubnetA1": {
+            "Type": "AWS::EC2::Subnet",
+
+            "Properties": {
+                "CidrBlock": "10.219.31.192/28",
+
+
+               "AvailabilityZone":{"Ref":"AZ1"} ,
+               "VpcId":  {"Ref" :"Vpcid"},
+
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2a-vpc-csr-sb"
+                      },
+
+                                                    {
+                                                            "Key": "Owner",
+                                                            "Value": {"Ref": "TagOwner"}
+                                                          }
+
+                    ]
+            }
+        },
+        "OreCSRSubnetB1": {
+            "Type": "AWS::EC2::Subnet",
+
+            "Properties": {
+                "CidrBlock": "10.219.31.208/28",
+                "AvailabilityZone":{"Ref":"AZ2"} ,
+                "VpcId":  {"Ref" :"Vpcid"},
+
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2b-vpc-csr-sb"
+                         },
+
+                         {
+                                 "Key": "Owner",
+                                 "Value": {"Ref": "TagOwner"}
+                               }
+                    ]
+            }
+        },
+
+
+
+        "OreDMZSubnetA1": {
+            "Type": "AWS::EC2::Subnet",
+
+            "Properties": {
+                "CidrBlock": "10.219.28.0/24",
+                "AvailabilityZone":{"Ref":"AZ1"} ,
+                "VpcId":  {"Ref" :"Vpcid"},
+
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2a-vpc-dmz-sb"
+                      },
+
+                      {
+                              "Key": "Owner",
+                              "Value": {"Ref": "TagOwner"}
+                            }
+                    ]
+            }
+        },
+        "OreDMZSubnetB1": {
+            "Type": "AWS::EC2::Subnet",
+
+            "Properties": {
+                "CidrBlock": "10.219.29.0/24",
+                "AvailabilityZone":{"Ref":"AZ2"} ,
+                "VpcId":  {"Ref" :"Vpcid"},
+
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2b-vpc-dmz-sb"
+                      },
+
+                      {
+                              "Key": "Owner",
+                              "Value": {"Ref": "TagOwner"}
+                            }
+                    ]
+            }
+        },
+
+        "OreFESubnetA1": {
+            "Type": "AWS::EC2::Subnet",
+
+            "Properties": {
+                "CidrBlock":"10.219.0.0/21",
+                "AvailabilityZone":{"Ref":"AZ1"} ,
+                "VpcId":  {"Ref" :"Vpcid"},
+
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2a-vpc-fe-sb"
+                      },
+
+                      {
+                              "Key": "Owner",
+                              "Value": {"Ref": "TagOwner"}
+                            }
+                    ]
+            }
+        },
+
+        "OreFESubnetB1": {
+            "Type": "AWS::EC2::Subnet",
+
+            "Properties": {
+                "CidrBlock": "10.219.8.0/21",
+                "AvailabilityZone":{"Ref":"AZ2"} ,
+                "VpcId":  {"Ref" :"Vpcid"},
+
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2b-vpc-fe-sb"
+                      },
+
+                      {
+                              "Key": "Owner",
+                              "Value": {"Ref": "TagOwner"}
+                            }
+                    ]
+            }
+        },
+
+        "OreMTSubnetA1": {
+            "Type": "AWS::EC2::Subnet",
+
+            "Properties": {
+                "CidrBlock":"10.219.16.0/23",
+                "AvailabilityZone":{"Ref":"AZ1"} ,
+                "VpcId":  {"Ref" :"Vpcid"},
+
+
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2a-vpc-mt-sb"
+                      },
+
+                      {
+                              "Key": "Owner",
+                              "Value": {"Ref": "TagOwner"}
+                            }
+                    ]
+            }
+        },
+
+        "OreMTSubnetB1": {
+            "Type": "AWS::EC2::Subnet",
+
+            "Properties": {
+                "CidrBlock": "10.219.18.0/23",
+                "AvailabilityZone":{"Ref":"AZ2"} ,
+                "VpcId":  {"Ref" :"Vpcid"},
+
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2b-vpc-mt-sb"
+                      },
+
+                      {
+                              "Key": "Owner",
+                              "Value": {"Ref": "TagOwner"}
+                            }
+                    ]
+            }
+        },
+
+        "OreDBSubnetA1": {
+            "Type": "AWS::EC2::Subnet",
+
+            "Properties": {
+                "CidrBlock": "10.219.20.0/23",
+                "AvailabilityZone":{"Ref":"AZ1"} ,
+                "VpcId":  {"Ref" :"Vpcid"},
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2a-vpc-db-sb"
+                      },
+
+                      {
+                              "Key": "Owner",
+                              "Value": {"Ref": "TagOwner"}
+                            }
+                    ]
+            }
+        },
+        "OreDBSubnetB1": {
+            "Type": "AWS::EC2::Subnet",
+
+            "Properties": {
+                "CidrBlock": "10.219.22.0/23",
+                "AvailabilityZone":{"Ref":"AZ2"} ,
+                "VpcId":  {"Ref" :"Vpcid"},
+
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2b-vpc-db-sb"
+                      },
+
+                      {
+                              "Key": "Owner",
+                              "Value": {"Ref": "TagOwner"}
+                            }
+                    ]
+            }
+        },
+        "OreSSSubnetA1": {
+            "Type": "AWS::EC2::Subnet",
+
+            "Properties": {
+                "CidrBlock":"10.219.24.0/24",
+                "AvailabilityZone":{"Ref":"AZ1"} ,
+                "VpcId":  {"Ref" :"Vpcid"},
+
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2a-vpc-ss-sb"
+                      },
+
+                      {
+                              "Key": "Owner",
+                              "Value": {"Ref": "TagOwner"}
+                            }
+                    ]
+            }
+        },
+
+        "OreSSSubnetB1": {
+            "Type": "AWS::EC2::Subnet",
+
+            "Properties": {
+              "AvailabilityZone":{"Ref":"AZ2"} ,
+              "VpcId":  {"Ref" :"Vpcid"},
+              "CidrBlock": "10.219.25.0/24",
+
+
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2b-vpc-ss-sb"
+                      },
+
+                      {
+                              "Key": "Owner",
+                              "Value": {"Ref": "TagOwner"}
+                            }
+                    ]
+            }
+        },
+
+
+
+
+
+        "Role": {
+            "Type": "AWS::IAM::Role",
+
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "vpc-flow-logs.amazonaws.com"
+                                ]
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyName": "flowlogs-policy",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "logs:CreateLogGroup",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents",
+                                        "logs:DescribeLogGroups",
+                                        "logs:DescribeLogStreams"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "RoleName": "stx-flowlog-role"
+            }
+        },
+        "LogGroupMTSubnetA1": {
+            "Type": "AWS::Logs::LogGroup",
+
+            "Properties": {
+                "RetentionInDays": "90",
+                "LogGroupName":"stx-uw2-2a-vpc-mt-sb-flowlog-lg"
+            }
+        },
+        "FlowLogMTSubnetA1": {
+            "Type": "AWS::EC2::FlowLog",
+
+            "Properties": {
+                "DeliverLogsPermissionArn": {
+                    "Fn::GetAtt": [
+                        "Role",
+                        "Arn"
+                    ]
+                },
+                "LogGroupName": {
+                    "Ref": "LogGroupMTSubnetA1"
+                },
+                "ResourceId": {
+                  "Ref": "OreMTSubnetA1"
+                },
+
+                "ResourceType": "Subnet",
+                "TrafficType": "ALL"
+            }
+        },
+        "LogGroupMTSubnetB1": {
+            "Type": "AWS::Logs::LogGroup",
+
+            "Properties": {
+                "RetentionInDays": "90",
+                "LogGroupName":"stx-uw2-2b-vpc-mt-sb-flowlog-lg"
+            }
+          },
+        "FlowLogMTSubnetB1": {
+            "Type": "AWS::EC2::FlowLog",
+
+            "Properties": {
+                "DeliverLogsPermissionArn": {
+                    "Fn::GetAtt": [
+                        "Role",
+                        "Arn"
+                    ]
+                },
+                "LogGroupName": {
+                    "Ref": "LogGroupMTSubnetB1"
+                },
+                "ResourceId": {
+                  "Ref": "OreMTSubnetB1"
+                },
+
+                "ResourceType": "Subnet",
+                "TrafficType": "ALL"
+            }
+        },
+
+        "LogGroupDBSubnetA1": {
+            "Type": "AWS::Logs::LogGroup",
+
+            "Properties": {
+                "RetentionInDays": "90",
+                "LogGroupName":"stx-uw2-2a-vpc-db-sb-flowlog-lg"
+            }
+          },
+
+        "FlowLogDBSubnetA1": {
+            "Type": "AWS::EC2::FlowLog",
+
+            "Properties": {
+                "DeliverLogsPermissionArn": {
+                    "Fn::GetAtt": [
+                        "Role",
+                        "Arn"
+                    ]
+                },
+                "LogGroupName": {
+                    "Ref": "LogGroupDBSubnetA1"
+                },
+                "ResourceId": {
+                  "Ref": "OreDBSubnetA1"
+                },
+
+                "ResourceType": "Subnet",
+                "TrafficType": "ALL"
+            }
+        },
+
+
+        "LogGroupDBSubnetB1": {
+            "Type": "AWS::Logs::LogGroup",
+
+            "Properties": {
+                "RetentionInDays": "90",
+                "LogGroupName":"stx-uw2-2b-vpc-db-sb-flowlog-lg"
+            }
+          },
+
+        "FlowLogDBSubnetB1": {
+            "Type": "AWS::EC2::FlowLog",
+
+            "Properties": {
+                "DeliverLogsPermissionArn": {
+                    "Fn::GetAtt": [
+                        "Role",
+                        "Arn"
+                    ]
+                },
+                "LogGroupName": {
+                    "Ref": "LogGroupDBSubnetB1"
+                },
+                "ResourceId": {
+                  "Ref": "OreDBSubnetB1"
+                },
+
+                "ResourceType": "Subnet",
+                "TrafficType": "ALL"
+            }
+        }
+      },
+
+
+
+        "Outputs" : {
+
+            "CSRA" : {
+            "Description" : "The ID of the VPC",
+            "Value" : { "Ref" : "OreCSRSubnetA1" },
+
+            },
+            "CSRB" : {
+            "Description" : "The ID of the VPC",
+            "Value" : { "Ref" : "OreCSRSubnetB1" },
+
+            },
+            "DMZA" : {
+            "Description" : "The ID of the VPC",
+            "Value" : { "Ref" : "OreDMZSubnetA1" },
+
+            },
+            "DMZB" : {
+            "Description" : "The ID of the VPC",
+            "Value" : { "Ref" : "OreDMZSubnetB1" },
+
+            },
+            "FEA" : {
+            "Description" : "The ID of the VPC",
+            "Value" : { "Ref" : "OreFESubnetA1" },
+
+            },
+            "FEB" : {
+            "Description" : "The ID of the VPC",
+            "Value" : { "Ref" : "OreFESubnetB1" },
+
+            },
+            "MTA" : {
+            "Description" : "The ID of the VPC",
+            "Value" : { "Ref" : "OreMTSubnetA1" },
+
+            },
+            "MTB" : {
+            "Description" : "The ID of the VPC",
+            "Value" : { "Ref" : "OreMTSubnetB1" },
+
+            },
+            "DBA" : {
+            "Description" : "The ID of the VPC",
+            "Value" : { "Ref" : "OreDBSubnetA1" },
+
+            },
+            "DBB" : {
+            "Description" : "The ID of the VPC",
+            "Value" : { "Ref" : "OreDBSubnetB1" },
+
+            },
+            "SSA" : {
+            "Description" : "The ID of the VPC",
+            "Value" : { "Ref" : "OreSSSubnetA1" },
+
+            },
+            "SSB" : {
+            "Description" : "The ID of the VPC",
+            "Value" : { "Ref" : "OreSSSubnetB1" },
+
+            }
+
+
+}
+}

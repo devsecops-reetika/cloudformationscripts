@@ -1,0 +1,180 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Deploys VPC and VGW ",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+            "ParameterGroups": [
+                {
+
+                    "Parameters": [
+                        "pRegionAZ1Name",
+                        "pRegionAZ2Name"
+
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": " VPC Configuration"
+                    },
+                    "Parameters": [
+
+
+                        "TagVPCOwner",
+                        "VPCTenancy",
+
+                        "TagOwner"
+
+                    ]
+                }
+            ]
+        },
+        "ParameterLabels": {
+            "VPCTenancy": {
+                "default": "Instance tenancy"
+            }
+        }
+    },
+
+
+    "Parameters": {
+        "RegionAZ1Name": {
+            "Description": "Availability Zone 1 Name in Region",
+            "Type": "AWS::EC2::AvailabilityZone::Name",
+            "Default": "us-west-2a"
+        },
+        "RegionAZ2Name": {
+            "Description": "Availability Zone 2 Name in Region",
+            "Type": "AWS::EC2::AvailabilityZone::Name",
+            "Default": "us-west-2b"
+        },
+
+        "ProductionVPCName": {
+            "Description": "Production VPC Name",
+            "Type": "String",
+            "Default": "stx-uw2-vpc"
+
+        },
+
+
+        "VPCTenancy": {
+            "Description": "Instance tenancy behavior for this VPC",
+            "Type": "String",
+            "Default": "default",
+            "AllowedValues": [
+                "default",
+                "dedicated"
+            ]
+        },
+
+        "TagOwner":{
+
+          "Type": "String",
+
+          "Description": "Tag for VPC Owner"
+        }
+
+
+
+      },
+
+    "Resources": {
+        "VPCProduction": {
+            "Type": "AWS::EC2::VPC",
+
+            "Properties": {
+                "CidrBlock": "10.219.0.0/19",
+                "InstanceTenancy": {
+                    "Ref": "VPCTenancy"
+                },
+                "EnableDnsSupport": true,
+                "EnableDnsHostnames": true,
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "stx-uw2-vpc"
+                      },
+                        {
+                                "Key": "Owner",
+                                "Value": {"Ref": "TagOwner"}
+                              }
+
+
+                ]
+            }
+        },
+
+        "VPCDhcpOptions" : {
+         "Type" : "AWS::EC2::DHCPOptions",
+         "Properties" : {
+            "DomainName" : "example.com",
+            "DomainNameServers" : [ "10.219.24.4","10.219.25.4" ],
+            "NtpServers" : [ "10.2.5.1" ],
+
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "stx-vpc-dhcpoptionset"
+                  },
+                    {
+                            "Key": "Owner",
+                            "Value": {"Ref": "TagOwner"}
+                          }
+
+
+            ]
+         }
+      },
+
+                "VPCDHCPOptionsAssociation" : {
+                "Type" : "AWS::EC2::VPCDHCPOptionsAssociation",
+                "Properties" : {
+                  "VpcId" : {"Ref" : "VPCProduction"},
+                  "DhcpOptionsId" : {"Ref" : "VPCDhcpOptions"}
+                }
+              },
+
+
+
+          "VPNGateway" : {
+         "Type" : "AWS::EC2::VPNGateway",
+         "Properties" : {
+            "AmazonSideAsn" :"64801",
+            "Type" : "ipsec.1",
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "stx-uw2-vpc-vgw"
+                  },
+                    {
+                            "Key": "Owner",
+                            "Value": {"Ref": "TagOwner"}
+                          }
+
+
+            ]
+         }
+      },
+
+  "AttachVpnGateway" : {
+   "Type" : "AWS::EC2::VPCGatewayAttachment",
+   "Properties" : {
+      "VpcId" : { "Ref" : "VPCProduction" },
+      "VpnGatewayId" : { "Ref" : "VPNGateway" }
+   }
+ }
+},
+"Outputs" : {
+    "Vpcid" : {
+      "Value" : {"Ref" : "VPCProduction"}
+    },
+    "AZ1" : {
+      "Value" : { "Ref" : "RegionAZ1Name" },
+    },
+    "AZ2" : {
+      "Value" : { "Ref" : "RegionAZ2Name" },
+    }
+
+  }
+
+
+}

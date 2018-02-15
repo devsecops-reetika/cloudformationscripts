@@ -1,0 +1,346 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "Deploys Secuirty Groups for VPC",
+
+  "Parameters": {
+   "VPCStackName": {
+     "Description": "Name of an active CloudFormation stack that contains the vpc resources that will be used in this stack.",
+     "Type": "String",
+     "MinLength" : 1,
+     "MaxLength" : 255,
+     "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
+     "Default" : "stx-landingzone-vpc-cfstack"
+   },
+
+   "TagOwner" :{
+     "Type": "String"
+   },
+
+
+       "Vpcid": {
+
+         "Type" :"String"
+       }
+
+ },
+
+   "Resources":{
+    "SecurityGroupCSR": {
+      "Type": "AWS::EC2::SecurityGroup",
+
+
+      "Properties": {
+      "VpcId":  {"Ref" :"Vpcid"},
+        "GroupDescription": "Allow In/Out traffic from/to On-Premise & DMZ Subnet",
+        "GroupName" :"stx-uw2-vpc-csr-sb-sg",
+
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "-1",
+
+            "CidrIp": "10.219.28.0/23",
+
+             "Description": "DMZ Subnets"
+          }
+
+                  ],
+          "SecurityGroupEgress" :[
+            {
+              "IpProtocol": "-1",
+
+              "CidrIp": "10.219.28.0/23",
+
+              "Description": "DMZ Subnets"
+
+            }],
+
+
+        "Tags": [{
+                "Key": "Name",
+                "Value": "stx-uw2-vpc-csr-sb-sg"
+              },
+
+                                            {
+                                                    "Key": "Owner",
+                                                    "Value": {"Ref": "TagOwner"}
+                                                  }
+
+            ]
+      }
+    },
+    "SecurityGroupDMZ": {
+      "Type": "AWS::EC2::SecurityGroup",
+
+
+      "Properties": {
+        "VpcId":  {"Ref" :"Vpcid"},
+        "GroupDescription": "Allow In/Out traffic from/to entire VPC",
+        "GroupName" :"stx-uw2-vpc-dmz-sb-sg",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "-1",
+
+            "CidrIp": "10.219.0.0/19",
+
+            "Description": "All VPC Subnets"
+          }
+
+                  ],
+          "SecurityGroupEgress" :[
+            {
+              "IpProtocol": "-1",
+
+              "CidrIp": "10.219.0.0/19",
+
+              "Description": "All VPC Subnets"
+
+            }],
+
+        "Tags": [{
+                "Key": "Name",
+                "Value": "stx-uw2-vpc-dmz-sb-sg"
+              },
+
+                                            {
+                                                    "Key": "Owner",
+                                                    "Value": {"Ref": "TagOwner"}
+                                                  }
+
+            ]
+      }
+    },
+    "SecurityGroupFE": {
+      "Type": "AWS::EC2::SecurityGroup",
+
+
+      "Properties": {
+        "VpcId":  {"Ref" :"Vpcid"},
+        "GroupDescription": "Allow In traffic from DMZ Subnet & Out traffic to DMZ,MT,DB,Shared Subnet",
+        "GroupName" :"stx-uw2-vpc-fe-sb-sg",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "-1",
+
+            "CidrIp": "10.219.28.0/23",
+
+            "Description": "DMZ Subnets"
+          }
+
+                  ],
+          "SecurityGroupEgress" :[
+            {
+              "IpProtocol": "-1",
+
+              "CidrIp": "10.219.28.0/23",
+
+              "Description": "DMZ Subnets"
+
+            },
+            {
+              "IpProtocol": "-1",
+
+              "CidrIp": "10.219.16.0/22",
+
+              "Description": "MiddleTier Subnets"
+
+            },
+            {
+              "IpProtocol": "-1",
+
+              "CidrIp": "10.219.20.0/22",
+
+              "Description": "Database Subnets"
+
+            },
+            {
+              "IpProtocol": "-1",
+
+              "CidrIp": "10.219.24.0/23",
+
+              "Description": "Shared Subnets"
+
+            }
+      ],
+
+        "Tags": [{
+                "Key": "Name",
+                "Value": "stx-uw2-vpc-fe-sb-sg"
+              },
+
+                                            {
+                                                    "Key": "Owner",
+                                                    "Value": {"Ref": "TagOwner"}
+                                                  }
+            ]
+
+
+      }
+    },
+    "SecurityGroupMT": {
+      "Type": "AWS::EC2::SecurityGroup",
+
+
+      "Properties": {
+      "VpcId":  {"Ref" :"Vpcid"},
+        "GroupDescription": "Allow In traffic from FrontEnd, DMZ Subnet & Out traffic to DMZ,DB,Shared Subnet",
+        "GroupName" :"stx-uw2-vpc-mt-sb-sg",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "-1",
+
+            "CidrIp": "10.219.0.0/20",
+
+            "Description": "FrontEnd Subnets"
+          },
+
+          {
+            "IpProtocol": "-1",
+
+            "CidrIp": "10.219.28.0/23",
+
+            "Description": "DMZ Subnets"
+          }
+                  ],
+          "SecurityGroupEgress" :[
+            {
+              "IpProtocol": "-1",
+
+              "CidrIp": "10.219.20.0/22",
+
+              "Description": "Database Subnets"
+
+            },
+            {
+              "IpProtocol": "-1",
+
+              "CidrIp": "10.219.24.0/23",
+
+              "Description": "Shared Subnets"
+
+            },
+            {
+              "IpProtocol": "-1",
+
+              "CidrIp": "10.219.28.0/23",
+
+              "Description": "DMZ Subnets"
+
+            }
+        ],
+        "Tags": [{
+                "Key": "Name",
+                "Value": "stx-uw2-vpc-mt-sb-sg"
+              },
+
+                                            {
+                                                    "Key": "Owner",
+                                                    "Value": {"Ref": "TagOwner"}
+                                                  }
+            ]
+      }
+    },
+    "SecurityGroupDB": {
+      "Type": "AWS::EC2::SecurityGroup",
+
+
+      "Properties": {
+        "VpcId":  {"Ref" :"Vpcid"},
+        "GroupDescription": "Allow In traffic from FT,MT,DMZ Subnet & Out traffic to DMZ, Shared Subnet",
+        "GroupName" :"stx-uw2-vpc-db-sb-sg",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "-1",
+
+            "CidrIp": "10.219.0.0/20",
+
+            "Description": "FrontEnd Subnets"
+          },
+          {
+            "IpProtocol": "-1",
+
+            "CidrIp": "10.219.16.0/22",
+
+            "Description": "MiddleTier Subnets"
+          },
+          {
+            "IpProtocol": "-1",
+
+            "CidrIp": "10.219.28.0/23",
+
+            "Description": "DMZ Subnets"
+          }
+
+                  ],
+          "SecurityGroupEgress" :[
+            {
+              "IpProtocol": "-1",
+
+              "CidrIp": "10.219.28.0/23",
+
+              "Description": "DMZ Subnets"
+
+            },
+            {
+              "IpProtocol": "-1",
+
+              "CidrIp": "10.219.24.0/23",
+
+              "Description": "Shared Subnets"
+
+            }],
+        "Tags": [{
+                "Key": "Name",
+                "Value": "stx-uw2-vpc-db-sb-sg"
+              },
+
+                                            {
+                                                    "Key": "Owner",
+                                                  "Value": {"Ref": "TagOwner"}
+                                                  }
+
+            ]
+      }
+    },
+    "SecurityGroupSS": {
+      "Type": "AWS::EC2::SecurityGroup",
+
+
+      "Properties": {
+        "VpcId":  {"Ref" :"Vpcid"},
+        "GroupDescription": "Allow In/Out traffic from/to entire VPC",
+        "GroupName" :"stx-uw2-vpc-ss-sb-sg",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "-1",
+
+            "CidrIp": "10.219.0.0/19",
+
+            "Description": "All VPC Subnets"
+          }
+
+                  ],
+          "SecurityGroupEgress" :[
+            {
+              "IpProtocol": "-1",
+
+              "CidrIp": "10.219.0.0/19",
+
+              "Description": "All VPC Subnets"
+
+            }],
+        "Tags": [{
+                "Key": "Name",
+                "Value": "stx-uw2-vpc-ss-sb-sg"
+              },
+
+                                            {
+                                                    "Key": "Owner",
+                                                    "Value": {"Ref": "TagOwner"}
+                                                  }
+
+            ]
+      }
+    }
+
+  }
+}

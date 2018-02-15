@@ -1,0 +1,509 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "Deploys Routing Tables and Internet Gateway for VPC",
+
+  "Parameters" :{
+
+    "Vpcid": {
+
+      "Type" :"String"
+    },
+
+    "AZ1":{
+      "Type":"String"
+    },
+
+    "AZ2":{
+      "Type" :"String"
+    },
+
+    "TagOwner" :{
+      "Type": "String"
+    },
+    "CSRA":{
+      "Type" :"String"
+    },
+    "CSRB":{
+      "Type" :"String"
+    },
+    "DMZA":{
+      "Type" :"String"
+    },
+    "DMZB":{
+      "Type" :"String"
+    },
+    "FEA":{
+      "Type" :"String"
+    },
+    "FEB":{
+      "Type" :"String"
+    },
+    "MTA":{
+      "Type" :"String"
+    },
+    "MTB":{
+      "Type" :"String"
+    },
+    "DBA":{
+      "Type" :"String"
+    },
+    "DBB":{
+      "Type" :"String"
+    },
+    "SSA":{
+      "Type" :"String"
+    },
+    "SSB":{
+      "Type" :"String"
+    },
+
+  },
+
+
+   "Resources":{
+
+     "OreInternetGateway": {
+         "Type": "AWS::EC2::InternetGateway",
+
+
+         "Properties": {
+             "Tags": [
+                 {
+                     "Key": "Name",
+                     "Value": "stx-uw2-vpc-igw"
+                 },
+                 {
+                         "Key": "Owner",
+                         "Value": {"Ref": "TagOwner"}
+                       }
+
+             ]
+         }
+
+     },
+
+     "OreIGWProd": {
+         "Type": "AWS::EC2::VPCGatewayAttachment",
+
+
+         "DependsOn": [
+
+             "OreInternetGateway"
+         ],
+         "Properties": {
+             "VpcId":  {"Ref" :"Vpcid"},
+
+             "InternetGatewayId": {
+                 "Ref": "OreInternetGateway"
+             }
+         }
+
+
+     },
+
+
+     "CSRARouteTable" : {
+          "Type" : "AWS::EC2::RouteTable",
+
+          "Properties" : {
+             "VpcId":  {"Ref" :"Vpcid"},
+
+             "Tags": [{
+                     "Key": "Name",
+                     "Value": "stx-uw2-vpc-csra-rt"
+                   },
+                   {
+                           "Key": "Owner",
+                           "Value": {"Ref": "TagOwner"}
+                         },
+                         {
+                                 "Key": "RouteType",
+                                 "Value": "Private"
+                               }
+
+
+
+                 ]
+          }
+       },
+
+
+
+       "CSRBRouteTable" : {
+            "Type" : "AWS::EC2::RouteTable",
+
+            "Properties" : {
+               "VpcId":  {"Ref" :"Vpcid"},
+               "Tags": [{
+                       "Key": "Name",
+                       "Value": "stx-uw2-vpc-csrb-rt"
+                     },
+                     {
+                             "Key": "Owner",
+                             "Value": {"Ref": "TagOwner"}
+                           },
+                           {
+                                   "Key": "RouteType",
+                                   "Value": "Private"
+                                 }
+
+
+                   ]
+
+            }
+         },
+
+
+         "DMZARouteTable" : {
+              "Type" : "AWS::EC2::RouteTable",
+
+              "Properties" : {
+                 "VpcId":  {"Ref" :"Vpcid"},
+                 "Tags": [{
+                         "Key": "Name",
+                         "Value": "stx-uw2-vpc-dmza-rt"
+                       },
+                       {
+                               "Key": "Owner",
+                               "Value": {"Ref": "TagOwner"}
+                             },
+                             {
+                                     "Key": "RouteType",
+                                     "Value": "Public"
+                                   }
+
+
+                     ]
+
+              }
+           },
+
+           "OreRouteDMZA": {
+              "Type": "AWS::EC2::Route",
+
+
+              "DependsOn": [
+                  "CSRARouteTable",
+                  "OreIGWProd"
+              ],
+              "Properties": {
+                  "DestinationCidrBlock": "0.0.0.0/0",
+                  "RouteTableId": {
+                      "Ref": "DMZARouteTable"
+                  },
+                  "GatewayId": {
+                      "Ref": "OreInternetGateway"
+                  }
+              }
+
+          },
+           "DMZBRouteTable" : {
+                "Type" : "AWS::EC2::RouteTable",
+
+                "Properties" : {
+                   "VpcId":  {"Ref" :"Vpcid"},
+                   "Tags": [{
+                           "Key": "Name",
+                           "Value": "stx-uw2-vpc-dmzb-rt"
+                         },
+                         {
+                                 "Key": "Owner",
+                                "Value": {"Ref": "TagOwner"}
+                               },
+                               {
+                                       "Key": "RouteType",
+                                       "Value": "Public"
+                                     }
+
+
+                       ]
+
+                }
+             },
+
+             "OreRoutedDMZB": {
+                 "Type": "AWS::EC2::Route",
+                 
+                 "DependsOn": [
+                     "CSRBRouteTable",
+                     "OreIGWProd"
+                 ],
+                 "Properties": {
+                     "DestinationCidrBlock": "0.0.0.0/0",
+                     "RouteTableId": {
+                         "Ref": "DMZBRouteTable"
+                     },
+                     "GatewayId": {
+                         "Ref": "OreInternetGateway"
+                     }
+                 }
+
+             },
+             "FEARouteTable" : {
+                  "Type" : "AWS::EC2::RouteTable",
+                  "Properties" : {
+                     "VpcId":  {"Ref" :"Vpcid"},
+                     "Tags": [{
+                             "Key": "Name",
+                             "Value": "stx-uw2-vpc-fea-rt"
+                           },
+                           {
+                                   "Key": "Owner",
+                                   "Value": {"Ref": "TagOwner"}
+                                 },
+                                 {
+                                         "Key": "RouteType",
+                                         "Value": "Private"
+                                       }
+
+
+                         ]
+
+                  }
+               },
+               "FEBRouteTable" : {
+                    "Type" : "AWS::EC2::RouteTable",
+                    "Properties" : {
+                       "VpcId":  {"Ref" :"Vpcid"},
+                       "Tags": [{
+                               "Key": "Name",
+                               "Value": "stx-uw2-vpc-feb-rt"
+                             },
+                             {
+                                     "Key": "Owner",
+                                     "Value": {"Ref": "TagOwner"}
+                                   },
+                                   {
+                                           "Key": "RouteType",
+                                           "Value": "Private"
+                                         }
+
+
+                           ]
+
+                    }
+                 },
+                 "MTARouteTable" : {
+                      "Type" : "AWS::EC2::RouteTable",
+                      "Properties" : {
+                         "VpcId":  {"Ref" :"Vpcid"},
+                         "Tags": [{
+                                 "Key": "Name",
+                                 "Value": "stx-uw2-vpc-mta-rt"
+                               },
+                               {
+                                       "Key": "Owner",
+                                       "Value": {"Ref": "TagOwner"}
+                                     },
+                                     {
+                                             "Key": "RouteType",
+                                             "Value": "Private"
+                                           }
+
+                             ]
+
+                      }
+                   },
+                   "MTBRouteTable" : {
+                        "Type" : "AWS::EC2::RouteTable",
+                        "Properties" : {
+                           "VpcId":  {"Ref" :"Vpcid"},
+                           "Tags": [{
+                                   "Key": "Name",
+                                   "Value": "stx-uw2-vpc-mtb-rt"
+                                 },
+                                 {
+                                         "Key": "Owner",
+                                         "Value": {"Ref": "TagOwner"}
+                                       },
+                                       {
+                                               "Key": "RouteType",
+                                               "Value": "Private"
+                                             }
+
+
+                               ]
+
+                        }
+                     },
+                     "DBARouteTable" : {
+                          "Type" : "AWS::EC2::RouteTable",
+                          "Properties" : {
+                            "VpcId":  {"Ref" :"Vpcid"},
+                             "Tags": [{
+                                     "Key": "Name",
+                                     "Value": "stx-uw2-vpc-dba-rt"
+                                   },
+                                   {
+                                           "Key": "Owner",
+                                          "Value": {"Ref": "TagOwner"}
+                                         },
+                                         {
+                                                 "Key": "RouteType",
+                                                 "Value": "Private"
+                                               }
+
+                                 ]
+
+                          }
+                       },
+                       "DBBRouteTable" : {
+                            "Type" : "AWS::EC2::RouteTable",
+                            "Properties" : {
+                               "VpcId":  {"Ref" :"Vpcid"},
+                               "Tags": [{
+                                       "Key": "Name",
+                                       "Value": "stx-uw2-vpc-dbb-rt"
+                                     },
+                                     {
+                                             "Key": "Owner",
+                                              "Value": {"Ref": "TagOwner"}
+                                           },
+                                           {
+                                                   "Key": "RouteType",
+                                                   "Value": "Private"
+                                                 }
+
+
+                                   ]
+
+                            }
+                         },
+                         "SSARouteTable" : {
+                              "Type" : "AWS::EC2::RouteTable",
+                              "Properties" : {
+                                 "VpcId":  {"Ref" :"Vpcid"},
+                                 "Tags": [{
+                                         "Key": "Name",
+                                         "Value": "stx-uw2-vpc-ssa-rt"
+                                       },
+                                       {
+                                               "Key": "Owner",
+                                               "Value": {"Ref": "TagOwner"}
+                                             },
+                                             {
+                                                     "Key": "RouteType",
+                                                     "Value": "Private"
+                                                   }
+
+
+                                     ]
+
+                              }
+                           },
+                           "SSBRouteTable" : {
+                                "Type" : "AWS::EC2::RouteTable",
+                                "Properties" : {
+                                  "VpcId":  {"Ref" :"Vpcid"},
+                                   "Tags": [{
+                                           "Key": "Name",
+                                           "Value": "stx-uw2-vpc-ssb-rt"
+                                         },
+                                         {
+                                                 "Key": "Owner",
+                                                 "Value": {"Ref": "TagOwner"}
+                                               },
+                                               {
+                                                       "Key": "RouteType",
+                                                       "Value": "Private"
+                                                     }
+
+
+                                       ]
+
+                                }
+                             },
+
+                "CSRASubnetRouteTableAssociation" : {
+                "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+                "Properties" : {
+                   "SubnetId" : { "Ref" : "CSRA" },
+                   "RouteTableId" : { "Ref" : "CSRARouteTable" }
+                }
+             },
+                   "CSRBSubnetRouteTableAssociation" : {
+                   "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+                   "Properties" : {
+                      "SubnetId" : { "Ref" : "CSRB" },
+                      "RouteTableId" : { "Ref" : "CSRBRouteTable" }
+                   }
+          },
+                  "DMZASubnetRouteTableAssociation" : {
+                  "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+                  "Properties" : {
+                     "SubnetId" : { "Ref" : "DMZA" },
+                     "RouteTableId" : { "Ref" : "DMZARouteTable" }
+                  }
+       },
+
+                   "DMZBSubnetRouteTableAssociation" : {
+                   "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+                   "Properties" : {
+                      "SubnetId" : { "Ref" : "DMZB" },
+                      "RouteTableId" : { "Ref" : "DMZBRouteTable" }
+                   }
+    },
+                    "FEASubnetRouteTableAssociation" : {
+                    "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+                    "Properties" : {
+                       "SubnetId" : { "Ref" : "FEA" },
+                       "RouteTableId" : { "Ref" : "FEARouteTable" }
+                    }
+ },
+
+                     "FEBSubnetRouteTableAssociation" : {
+                     "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+                     "Properties" : {
+                        "SubnetId" : { "Ref" : "FEB" },
+                        "RouteTableId" : { "Ref" : "FEBRouteTable" }
+                     }
+},
+                      "MTASubnetRouteTableAssociation" : {
+                      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+                      "Properties" : {
+                         "SubnetId" : { "Ref" : "MTA" },
+                         "RouteTableId" : { "Ref" : "MTARouteTable" }
+                      }
+},
+                        "MTBSubnetRouteTableAssociation" : {
+                        "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+                        "Properties" : {
+                           "SubnetId" : { "Ref" : "MTB" },
+                           "RouteTableId" : { "Ref" : "MTBRouteTable" }
+                        }
+},
+                        "DBASubnetRouteTableAssociation" : {
+                        "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+                        "Properties" : {
+                          "SubnetId" : { "Ref" : "DBA" },
+                           "RouteTableId" : { "Ref" : "DBARouteTable" }
+                        }
+},
+                        "DBBSubnetRouteTableAssociation" : {
+                        "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+                        "Properties" : {
+                           "SubnetId" : { "Ref" : "DBB" },
+                           "RouteTableId" : { "Ref" : "DBBRouteTable" }
+                        }
+},
+                      "SSASubnetRouteTableAssociation" : {
+                      "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+                      "Properties" : {
+                         "SubnetId" : { "Ref" : "SSA" },
+                         "RouteTableId" : { "Ref" : "SSARouteTable" }
+                      }
+},
+                  "SSBSubnetRouteTableAssociation" : {
+                  "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+                  "Properties" : {
+                     "SubnetId" : { "Ref" : "SSB" },
+                     "RouteTableId" : { "Ref" : "SSBRouteTable" }
+                  }
+}
+
+
+
+
+
+  }
+}

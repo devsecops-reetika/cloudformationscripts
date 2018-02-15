@@ -1,0 +1,139 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Deploys Network Infrastructure ",
+    "Metadata": {
+        "AWS::CloudFormation::Interface": {
+
+
+                    "Parameters": [
+                        "pRegionAZ1Name",
+                        "pRegionAZ2Name",
+                        "TagVPCOwner",
+                        "VPCTenancy",
+                        "TagOwner"
+
+                    ]
+                }
+
+        },
+
+    "Parameters": {
+        "RegionAZ1Name": {
+            "Description": "Availability Zone 1 Name in Region",
+            "Type": "AWS::EC2::AvailabilityZone::Name",
+            "Default": "us-west-2a"
+        },
+        "RegionAZ2Name": {
+            "Description": "Availability Zone 2 Name in Region",
+            "Type": "AWS::EC2::AvailabilityZone::Name",
+            "Default": "us-west-2b"
+        },
+
+        "ProductionVPCName": {
+            "Description": "Production VPC Name",
+            "Type": "String",
+            "Default": "stx-uw2-vpc",
+
+        },
+
+
+        "VPCTenancy": {
+            "Description": "Instance tenancy behavior for this VPC",
+            "Type": "String",
+            "Default": "default",
+            "AllowedValues": [
+                "default",
+                "dedicated"
+            ]
+        },
+
+        "TagOwner":{
+
+          "Type": "String",
+
+          "Description": "Tag for VPC Owner"
+        }
+
+
+
+      },
+
+    "Resources": {
+      "VPCTemplate":
+      {
+       "Type" : "AWS::CloudFormation::Stack",
+       "Properties" : {
+         "Parameters": {
+          "TagOwner" :{"Ref" :"TagOwner"}
+        },
+
+          "TemplateURL" : "https://s3-us-west-2.amazonaws.com/stx-testcft/vpc.json",
+            "TimeoutInMinutes" : "60"
+       }
+     },
+
+
+                       "SubnetTemplate":
+                       {
+                        "Type" : "AWS::CloudFormation::Stack",
+                        "Properties" : {
+                          "Parameters" :{
+                            "Vpcid": {"Fn::GetAtt":["VPCTemplate", "Outputs.Vpcid"]},
+                            "AZ1" :{"Ref" :"RegionAZ1Name"},
+                            "AZ2" :{"Ref" :"RegionAZ2Name"},
+                            "TagOwner" :{"Ref" :"TagOwner"}
+                          },
+
+                           "TemplateURL" : "https://s3-us-west-2.amazonaws.com/stx-testcft/subnets.json",
+                             "TimeoutInMinutes" : "60"
+                        }
+                      },
+
+                      "RoutableTemplate":
+                      {
+                       "Type" : "AWS::CloudFormation::Stack",
+                       "Properties" : {
+                         "Parameters" :{
+                           "Vpcid": {"Fn::GetAtt":["VPCTemplate", "Outputs.Vpcid"]},
+                           "CSRA":{"Fn::GetAtt":["SubnetTemplate", "Outputs.CSRA"]},
+                           "CSRB":{"Fn::GetAtt":["SubnetTemplate", "Outputs.CSRB"]},
+                           "DMZA":{"Fn::GetAtt":["SubnetTemplate", "Outputs.DMZA"]},
+                           "DMZB":{"Fn::GetAtt":["SubnetTemplate", "Outputs.DMZB"]},
+                           "FEA":{"Fn::GetAtt":["SubnetTemplate", "Outputs.FEA"]},
+                           "FEB":{"Fn::GetAtt":["SubnetTemplate", "Outputs.FEB"]},
+                           "MTA":{"Fn::GetAtt":["SubnetTemplate", "Outputs.MTA"]},
+                           "MTB":{"Fn::GetAtt":["SubnetTemplate", "Outputs.MTB"]},
+                           "DBA":{"Fn::GetAtt":["SubnetTemplate", "Outputs.DBA"]},
+                           "DBB":{"Fn::GetAtt":["SubnetTemplate", "Outputs.DBB"]},
+                           "SSA":{"Fn::GetAtt":["SubnetTemplate", "Outputs.SSA"]},
+                           "SSB":{"Fn::GetAtt":["SubnetTemplate", "Outputs.SSB"]},
+                           "AZ1" :{"Ref" :"RegionAZ1Name"},
+                           "AZ2" :{"Ref" :"RegionAZ2Name"},
+                           "TagOwner" :{"Ref" :"TagOwner"}
+                         },
+
+                          "TemplateURL" : "https://s3-us-west-2.amazonaws.com/stx-testcft/routingtableandigw.json",
+                            "TimeoutInMinutes" : "60"
+                       }
+                     },
+
+                     "SecuirtygroupTemplate":
+                     {
+                      "Type" : "AWS::CloudFormation::Stack",
+                      "Properties" : {
+                        "Parameters": {
+                        "Vpcid": {"Fn::GetAtt":["VPCTemplate", "Outputs.Vpcid"]},
+                         "TagOwner" :{"Ref" :"TagOwner"}
+                       },
+
+                         "TemplateURL" : "https://s3-us-west-2.amazonaws.com/stx-testcft/securitygroup.json",
+                           "TimeoutInMinutes" : "60"
+                      }
+                    },
+
+
+
+
+
+                   }
+                  }
