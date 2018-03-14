@@ -1,0 +1,166 @@
+{
+    "Description": "Deployes Cisco Cloud Services Router: CSR1000V - AX Technology Package for Maximum Performance",
+    "Parameters": {
+
+		"VPC": {
+			"Type": "AWS::EC2::VPC::Id",
+			"Description": "VPC ID to launch into"
+		},
+
+
+        "Subnetnic1": {
+            "Description": " Subnet",
+            "Type": "AWS::EC2::Subnet::Id",
+			"Description": "Subnet for NIC 1"
+        },
+
+        "Subnetnic2": {
+            "Description": " Subnet",
+            "Type": "AWS::EC2::Subnet::Id",
+			"Description": "Subnet for NIC 2"
+        },
+
+        "PrivateIPtoNIC1" : {
+           "Description" : "Private IP address for EC2 Instance",
+           "Type": "String"
+
+        },
+
+        "PrivateIPtoNIC2" : {
+           "Description" : "Private IP address for EC2 Instance",
+           "Type": "String"
+
+        },
+        "InstanceType": {
+            "Description": "Type of EC2 Instance",
+            "Type": "String",
+            "Default":"c4.large"
+
+        },
+
+        "EC2InstanceImage": {
+           "Description" : "Image/AMI ID",
+           "Type": "String"
+
+         },
+
+        "InstanceSecurityGroup": {
+         "Description": "Security group to be used",
+         "Type": "AWS::EC2::SecurityGroup::Id",
+         "ConstraintDescription": "must be list of EC2 security group ids"
+         },
+
+        "KeyName": {
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "Description": "Key Pair for EC2 Instance"
+        }
+      },
+
+    "Resources": {
+
+        "ENI1": {
+            "Type": "AWS::EC2::NetworkInterface",
+            "Properties": {
+                "SubnetId":{"Ref":"Subnetnic1"},
+
+                "GroupSet":[{"Ref":"InstanceSecurityGroup"}],
+                "PrivateIpAddress": {"Ref":"PrivateIPtoNIC1"},
+                "SourceDestCheck":"false",
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2a-prd-csr-ec2-nic-1"
+                      },
+
+                      {
+                              "Key": "Owner",
+                              "Value": "Steve A Alnaama"
+                            },
+                            {
+                                    "Key": "BusinessUnit",
+                                    "Value": "Network"
+                                  }
+
+
+
+                          ]
+            }
+        },
+
+
+        "ENI2": {
+            "Type": "AWS::EC2::NetworkInterface",
+            "Properties": {
+                "SubnetId":{"Ref": "Subnetnic2"},
+
+                "GroupSet":[{"Ref":"InstanceSecurityGroup"}],
+                "PrivateIpAddress": {"Ref":"PrivateIPtoNIC2"},
+                "SourceDestCheck":"false",
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2a-prd-csr-ec2-nic-2"
+                      }
+
+                    ]
+
+        }
+      },
+
+        "TwoInterfaceCSR": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+
+                "InstanceType":{"Ref":"InstanceType"},
+                "KeyName":{"Ref":"KeyName"},
+                "NetworkInterfaces":[
+                    {"NetworkInterfaceId":{"Ref":"ENI1"},"DeviceIndex":"0"},
+                    {"NetworkInterfaceId":{"Ref":"ENI2"},"DeviceIndex":"1"}
+                ],
+
+
+                "ImageId":{"Ref":"EC2InstanceImage"},
+                "Tags": [{
+                        "Key": "Name",
+                        "Value": "stx-uw2-2a-prd-csr-01-ec2"
+                      },
+
+                      {
+                              "Key": "ApplicationRole",
+                              "Value": "Cloud Service Router 1000v"
+                            },
+                            {
+                                    "Key": "Cluster",
+                                    "Value": "NA"
+                                  },
+                                  {
+                                          "Key": "Environment",
+                                          "Value": "Production"
+                                        },
+                                        {
+                                                "Key": "Version",
+                                                "Value": "03.16.04.aS, release 10/07/2016"
+                                              },
+                                             {
+                                                      "Key": "OperatingSystem",
+                                                      "Value": "IOS XE"
+                                                    },
+                                                    {
+                                                            "Key": "Owner",
+                                                            "Value": "Steve A Alnaama"
+                                                          },
+                                                          {
+                                                                  "Key": "BusinessUnit",
+                                                                  "Value": "Network"
+                                                                },
+                                                                {
+                                                                        "Key": "Compliance",
+                                                                        "Value": "NA"
+                                                                      },{
+                                                                              "Key": "Backup",
+                                                                              "Value": "FALSE"
+                                                                            }
+
+                    ]
+            }
+        }
+    }
+}
